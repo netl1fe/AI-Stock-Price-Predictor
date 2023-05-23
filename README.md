@@ -1,6 +1,4 @@
-Certainly! Here's the revised README file with the program called `gainz.py`:
-
-# Gainz - Stock Price Prediction with LSTM
+## Gainz - Stock Price Prediction with LSTM
 
 Gainz is a Python program that utilizes Long Short-Term Memory (LSTM) neural networks to predict the future price movement of stocks. It uses historical stock data, including opening price, high, low, close, and volume, to train an LSTM model and make predictions.
 
