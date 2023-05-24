@@ -47,4 +47,4 @@ python3 gainz.py
 
 - Gainz assumes that you have access to a reliable data source for historical stock prices. It uses the `yfinance` library to fetch the data from Yahoo Finance. If you encounter any issues with data retrieval, make sure your internet connection is stable and the data source is accessible.
 
-##GainzV2 is still in production
+## GainzV2 is still in production
