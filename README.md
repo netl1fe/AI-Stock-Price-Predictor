@@ -1,49 +1,56 @@
-## Gainz - Stock Price Prediction with LSTM
+To create a README file for the `gainz.py` and `gainzv2.py` programs, you can follow the template below:
 
-Gainz is a Python program that utilizes Long Short-Term Memory (LSTM) neural networks to predict the future price movement of stocks. It uses historical stock data, including opening price, high, low, close, and volume, to train an LSTM model and make predictions.
+# Gainz.py and Gainzv2.py
+
+This repository contains two Python programs, `gainz.py` and `gainzv2.py`, which use LSTM models to predict price movements in the stock market based on historical data.
 
 ## Prerequisites
 
-Before running the program, make sure you have the following dependencies installed:
+To run the programs, make sure you have the following dependencies installed:
 
-- Python 3
-- NumPy
-- pandas
+- Python 3.x
+- numpy
 - yfinance
 - scikit-learn
-- PyTorch
+- torch
+- ta (Technical Analysis Library)
 
-You can install the dependencies by running the following command:
+You can install the dependencies using pip:
 
 ```
-pip install numpy pandas yfinance scikit-learn torch
+pip install numpy yfinance scikit-learn torch ta
 ```
 
 ## Usage
 
-1. Clone the repository or download the source code files.
+### gainz.py
 
-2. Open the `gainz.py` file in a text editor.
+1. Open the `gainz.py` file.
+2. Modify the `tickers`, `start_date`, `end_date`, `seq_length`, `input_dim`, `hidden_dim`, `num_layers`, `output_dim`, `num_epochs`, and `learning_rate` variables according to your needs.
+3. Run the script using the command: `python gainz.py`.
 
-3. Adjust the `tickers`, `start_date`, `end_date`, `seq_length`, `input_dim`, `hidden_dim`, `num_layers`, `output_dim`, `num_epochs`, and `learning_rate` variables according to your requirements.
+The program will download historical stock data using Yahoo Finance, normalize the data, train an LSTM model, and predict the next day's stock prices. The predicted prices will be printed on the console.
 
-4. Save the changes and close the file.
+### gainzv2.py
 
-5. Open a terminal or command prompt and navigate to the directory where the `gainz.py` file is located.
+1. Open the `gainzv2.py` file.
+2. Modify the `ticker`, `start_date`, `end_date`, `seq_length`, `hidden_dim`, `num_layers`, `num_epochs`, and `learning_rate` variables according to your needs.
+3. Run the script using the command: `python gainzv2.py`.
 
-6. Run the program using the following command:
+The program will download historical stock data using Yahoo Finance, normalize the data, train an LSTM model, and predict the next day's stock prices. The predicted prices will be printed on the console.
 
-```
-python3 gainz.py
-```
+## Additional Notes
 
-7. The program will start processing each ticker and display the training progress and the predicted next day values for each stock.
+- Both programs utilize LSTM models for predicting stock prices.
+- `gainz.py` uses the `MinMaxScaler` from scikit-learn for data normalization.
+- `gainzv2.py` uses the `MinMaxScaler` from scikit-learn for data normalization and the `ta` library for technical analysis feature calculation.
+- The programs are set to predict price movements for the SPY (S&P 500 ETF) stock by default. You can modify the ticker symbol to predict prices for other stocks.
+- The start_date variable in both programs determines the starting point of historical data.
+- The end_date variable in both programs is set to the current date by default.
+- The programs are designed to run on either CPU or GPU (if available) based on the device availability.
 
-## Important Note
+Feel free to explore and modify the programs to suit your needs!
 
-- The Gainz program uses historical stock data to train the LSTM model and make predictions. However, stock price prediction is a complex and uncertain task, and the program's predictions should be used for informational purposes only. It is recommended to perform thorough analysis and consult financial experts before making any investment decisions.
+## Disclaimer
 
-- The accuracy of the predictions depends on various factors, including the quality and relevance of the input data, the model architecture, and the nature of the stock market. Interpret the predictions with caution and do not solely rely on them for making investment decisions.
-
-- Gainz assumes that you have access to a reliable data source for historical stock prices. It uses the `yfinance` library to fetch the data from Yahoo Finance. If you encounter any issues with data retrieval, make sure your internet connection is stable and the data source is accessible.
-
+These programs provide predictions based on historical data and should not be considered financial advice. The predictions may not reflect actual market behavior, and investing in the stock market involves risks. Always do your own research and consult with a financial advisor before making investment decisions.
