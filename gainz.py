@@ -88,8 +88,7 @@ def print_prediction(stock, prediction):
         print(f"{label}: {pred:.2f}")
 
 
-tickers = ['AAPL', 'GOOG', 'TSLA', 'MSFT', 'AMZN',
-           'META', 'NFLX', 'NVDA', 'INTC', 'AMD', 'SPY']
+tickers = ['SPY']
 start_date = '2000-01-01'
 end_date = datetime.date.today().strftime('%Y-%m-%d')  # Set to current date
 seq_length = 7
