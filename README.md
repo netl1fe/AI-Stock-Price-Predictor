@@ -1,5 +1,3 @@
-To create a README file for the `gainz.py` and `gainzv2.py` programs, you can follow the template below:
-
 # Gainz.py and Gainzv2.py
 
 This repository contains two Python programs, `gainz.py` and `gainzv2.py`, which use LSTM models to predict price movements in the stock market based on historical data.
