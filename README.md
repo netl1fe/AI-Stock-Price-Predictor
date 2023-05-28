@@ -35,9 +35,3 @@ python main.py
 - Further experimentation and hyperparameter tuning may be required to improve prediction accuracy.
 - Additional features, like volume-based indicators or macroeconomic data, could enhance the model's performance.
 - Remember that past performance is not indicative of future results in the stock market, and predictions should not be the sole basis for financial decisions.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-Feel free to modify and expand upon this README file to include any additional information or sections that are relevant to your program.
