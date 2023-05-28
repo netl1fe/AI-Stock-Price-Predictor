@@ -89,8 +89,8 @@ def print_prediction(stock, prediction):
 
 
 tickers = ['SPY']
-start_date = '2000-01-01'
-end_date = datetime.date.today().strftime('%Y-%m-%d')  # Set to current date
+start_date = "1993-01-30"
+end_date = "2023-05-24"
 seq_length = 7
 input_dim = 5
 hidden_dim = 32

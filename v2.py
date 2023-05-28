@@ -9,6 +9,7 @@ from sklearn.preprocessing import MinMaxScaler
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import datetime
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -93,12 +94,13 @@ def train_model(model, X, y, num_epochs, learning_rate):
 
 ticker = "SPY"
 start_date = "1993-01-30"
-end_date = "2023-05-25"
-seq_length = 30  # increased sequence length
-hidden_dim = 128  # increased hidden dimensions
+end_date = "2023-05-24"
+seq_length = 30
+hidden_dim = 64
 num_layers = 2
-num_epochs = 200  # increased number of epochs
+num_epochs = 100
 learning_rate = 0.001
+
 
 data = fetch_historical_data(ticker, start_date, end_date)
 data = add_selected_ta_features(data)

@@ -88,8 +88,8 @@ def train_model(model, X, y, num_epochs, learning_rate):
 
 
 ticker = "SPY"
-start_date = "2000-01-01"
-end_date = datetime.date.today().strftime("%Y-%m-%d")
+start_date = "1993-01-30"
+end_date = "2023-05-24"
 seq_length = 7
 hidden_dim = 64
 num_layers = 2
