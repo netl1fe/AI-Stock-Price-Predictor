@@ -1,4 +1,3 @@
-Certainly! Here's an example of a README file for your program:
 
 ```
 # Stock Price Prediction with LSTM
