@@ -168,9 +168,9 @@ def train_model(model, X, y, num_epochs, learning_rate):
 ticker = "SPY"
 start_date = "1993-01-30"
 end_date = "2023-05-24"
-seq_length = 30  # increased sequence length
-hidden_dim = 128  # increased hidden dimensions
-num_layers = 2
+seq_length = 60  # increased sequence length
+hidden_dim = 64  # increased hidden dimensions
+num_layers = 3
 num_epochs = 200  # increased number of epochs
 learning_rate = 0.001
 
