@@ -98,7 +98,7 @@ end_date = "2023-05-24"
 seq_length = 30
 hidden_dim = 64
 num_layers = 2
-num_epochs = 100
+num_epochs = 200
 learning_rate = 0.001
 
 
