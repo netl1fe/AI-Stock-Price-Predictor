@@ -9,6 +9,8 @@ from sklearn.preprocessing import MinMaxScaler
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from datetime import datetime, timedelta
+
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -93,10 +95,10 @@ def train_model(model, X, y, num_epochs, learning_rate):
 
 ticker = "SPY"
 start_date = "1993-01-30"
-end_date = "2023-05-25"
-seq_length = 30  # increased sequence length
-hidden_dim = 128  # increased hidden dimensions
-num_layers = 2
+end_date = "2023-05-24"
+seq_length = 60  # increased sequence length
+hidden_dim = 64  # increased hidden dimensions
+num_layers = 3
 num_epochs = 200  # increased number of epochs
 learning_rate = 0.001
 
@@ -125,7 +127,11 @@ prediction = prediction.detach().cpu().numpy()
 # Un-normalize the prediction
 prediction = scaler.inverse_transform(prediction)
 
-print(f"Predicted prices for {ticker} on {end_date}:")
+end_date_datetime = datetime.strptime(end_date, "%Y-%m-%d")
+next_day_datetime = end_date_datetime + timedelta(days=1)
+next_day = next_day_datetime.strftime("%Y-%m-%d")
+
+print(f"Predicted prices for {ticker} on {next_day}:")
 print(f"Open: {prediction[0, 0]}")
 print(f"High: {prediction[0, 1]}")
 print(f"Low: {prediction[0, 2]}")
