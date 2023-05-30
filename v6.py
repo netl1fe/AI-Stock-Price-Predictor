@@ -109,7 +109,7 @@ model1 = train_model(model1, X_train, y_train, X_val, y_val, num_epochs, learnin
 model2 = train_model(model2, X_train, y_train, X_val, y_val, num_epochs, learning_rate)
 
 # Ensembling predictions
-X_predict = X[-1:, :, :]
+X_predict = torch.from_numpy(X[-1:, :, :]).float().to(device)
 model1.eval()
 model2.eval()
 prediction1 = model1(X_predict)
