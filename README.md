@@ -14,11 +14,11 @@ git clone https://github.com/yourusername/stock-price-prediction.git
 pip install -r requirements.txt
 ```
 
-3. Open `main.py` and modify the program parameters to suit your needs.
+3. Open `v0.py` and modify the program parameters to suit your needs.
 
 4. Run the program:
 ```
-python main.py
+python v0.py
 ```
 
 5. The program will print the predicted Open, High, Low, and Close prices for the next day based on the trained model.
