@@ -1,4 +1,3 @@
-##previously v4
 import numpy as np
 import pandas as pd
 import yfinance as yf
@@ -169,10 +168,10 @@ def train_model(model, X, y, num_epochs, learning_rate):
 ticker = "SPY"
 start_date = "1993-01-30"
 end_date = "2023-05-25"
-seq_length = 60  # increased sequence length
-hidden_dim = 64  # increased hidden dimensions
+seq_length = 60 
+hidden_dim = 64  
 num_layers = 3
-num_epochs = 200  # increased number of epochs
+num_epochs = 200 
 learning_rate = 0.001
 
 end_date_datetime = datetime.strptime(end_date, "%Y-%m-%d")
@@ -182,7 +181,7 @@ next_day = next_day_datetime.strftime("%Y-%m-%d")
 
 data = fetch_historical_data(ticker, start_date, end_date)
 data = add_selected_ta_features(data)
-data = data.dropna()  # drop rows with NaN values
+data = data.dropna()  
 data, scaler = normalize_data(data.values)
 X, y = create_sequences(data, seq_length)
 
@@ -195,14 +194,11 @@ output_dim = data.shape[1]
 model = LSTMModel(input_dim, hidden_dim, num_layers, output_dim).to(device)
 model = train_model(model, X, y, num_epochs, learning_rate)
 
-# Now to predict for a specific date, you can select the sequence leading up to this date
-# For simplicity, let's just use the last sequence from the data
 X_predict = X[-1:, :, :]
 model.eval()
 prediction = model(X_predict)
 prediction = prediction.detach().cpu().numpy()
 
-# Un-normalize the prediction
 prediction = scaler.inverse_transform(prediction)
 
 print(f"Predicted prices for {ticker} on {next_day}:")
