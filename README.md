@@ -6,7 +6,7 @@ This program uses a combination of Convolutional Neural Networks (CNNs) and Long
 
 1. Clone the repository:
 ```
-git clone https://github.com/yourusername/stock-price-prediction.git
+git clone https://github.com/user00011001/Gainz.git
 ```
 
 2. Install the required dependencies:
