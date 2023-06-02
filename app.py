@@ -223,5 +223,17 @@ if st.button("Predict"):
     st.write(f"Low: {prediction[0, 2]}")
     st.write(f"Close: {prediction[0, 3]}")
 
+    # Fetch actual data for the predicted day
+    actual_data = fetch_historical_data(ticker, next_day, next_day_datetime + timedelta(days=1))
+
+    if not actual_data.empty:
+        st.subheader(f"Actual prices for {ticker} on {next_day}:")
+        st.write(f"Open: {actual_data.iloc[0]['Open']}")
+        st.write(f"High: {actual_data.iloc[0]['High']}")
+        st.write(f"Low: {actual_data.iloc[0]['Low']}")
+        st.write(f"Close: {actual_data.iloc[0]['Close']}")
+    else:
+        st.write("The actual data for the predicted day is not yet available.")
+
 st.markdown("---")
 st.markdown("Built by netl1fe", unsafe_allow_html=True)
