@@ -1,46 +1,59 @@
-# GAINZ
+# AI Stock Price Predictor
 
-This program uses a combination of Convolutional Neural Networks (CNNs) and Long Short-Term Memory (LSTM) neural networks to predict stock prices. Leveraging technical analysis indicators and historical price data, the model forecasts the Open, High, Low, and Close prices for the next trading day.
+This is a Streamlit web app which uses a LSTM model to predict future stock prices. The LSTM model is trained on historical stock prices and multiple technical indicators such as Bollinger Bands, MACD, and RSI.
 
-## Usage
-
-1. Clone the repository:
-```
-git clone https://github.com/user00011001/Gainz.git
-```
-
-2. Install the required dependencies:
-```
-pip install -r requirements.txt
-```
-
-3. Open `V0.py` and modify the parameters as needed. You can set the ticker symbol, start and end date for the data, and adjust the neural network and training parameters.
-
-4. Run the program:
-```
-python V0.py
-```
-
-5. The program will train the model and print the predicted Open, High, Low, and Close prices for the following day based on the trained model.
-
-## Tuning Hyperparameters
-
-The performance of the model heavily relies on the configuration of the hyperparameters. These include the sequence length, hidden dimensions, number of LSTM layers, and learning rate, among others. The model also uses early stopping, which you can configure by setting the patience level.
-
-When tuning these hyperparameters, consider the following:
-
-- **Sequence Length**: The sequence length represents the number of historical data points that the model will consider. A larger sequence length may capture more trends but could also lead to overfitting. 
-- **Hidden Dimensions**: This parameter refers to the size of the LSTM's hidden state. More dimensions can capture more complex patterns but may also increase computational cost and overfitting risk.
-- **Number of LSTM Layers**: Adding more layers can capture more complex relationships in the data but also raises the risk of overfitting and requires more computational resources.
-- **Learning Rate**: The learning rate determines how much the model changes in response to the estimated error each time the model weights are updated. Choosing the right learning rate is crucial for good performance.
-- **Early Stopping Patience**: This is the number of epochs with no improvement after which training will be stopped. The use of early stopping aims to prevent overfitting.
-
-It's crucial to balance model complexity with the risk of overfitting. Using a validation set or cross-validation can provide a more robust way to tune these hyperparameters.
+The stock data is fetched from Yahoo Finance using the `yfinance` library. The technical indicators are computed using the `ta` library.
 
 ## Features
 
-- Fetches historical stock price data using the yfinance library.
-- Calculates several technical analysis indicators using the Technical Analysis Library (ta).
-- Normalizes data using Scikit-learn's MinMaxScaler.
-- Implements a Conv1D_LSTM model using PyTorch for predicting stock prices.
-- Incorporates an early stopping mechanism during training to prevent overfitting.
+- Select any publicly traded company from Yahoo Finance.
+- Choose the date range of the historical data for the model to train on.
+- Set the model hyperparameters such as the sequence length, hidden dimension size, number of layers, number of epochs, and learning rate.
+- Visualize the loss during the model training.
+
+## Setup & Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/netl1fe/AI-Stock-Price-Predictor.git
+```
+2. Change directory to the project
+```bash
+cd AI-Stock-Price-Predictor
+```
+3. Install the necessary dependencies
+```bash
+pip install -r requirements.txt
+```
+4. Run the Streamlit app
+```bash
+streamlit run app.py
+```
+
+## Requirements
+
+The necessary dependencies are listed in the `requirements.txt` file. They include:
+- numpy==1.21.0
+- pandas==1.3.0
+- yfinance==0.1.63
+- ta==0.7.0
+- scikit-learn==0.24.2
+- torch==1.9.0
+- streamlit==0.86.0
+
+Please ensure you have the correct versions of these libraries installed to avoid any potential issues.
+
+**Note:** This project assumes you have Python 3.x installed. 
+
+## Usage
+
+- Enter the ticker symbol of the stock you want to predict in the text box.
+- Select the date range of the historical data you want to train the model on.
+- Use the sliders to set the model hyperparameters.
+- Click on "Predict" to start the model training and prediction process.
+
+The predicted stock prices for the next day will be displayed once the model finishes training.
+
+## Disclaimer
+
+This application is for informational purposes only and does not constitute investment advice. Please do your own research before making any investment decisions.
