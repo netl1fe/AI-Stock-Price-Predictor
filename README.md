@@ -1,5 +1,6 @@
 # AI Stock Price Predictor
 ![Preview](preview.gif)
+
 This is a Streamlit web app which uses a LSTM model to predict future stock prices. The LSTM model is trained on historical stock prices and multiple technical indicators such as Bollinger Bands, MACD, and RSI.
 
 The stock data is fetched from Yahoo Finance using the `yfinance` library. The technical indicators are computed using the `ta` library.
