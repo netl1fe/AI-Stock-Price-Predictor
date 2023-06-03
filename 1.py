@@ -38,34 +38,15 @@ class EarlyStopping:
             self.counter = 0
 
 
-class LSTMModel(nn.Module):
-    def __init__(self, input_dim, hidden_dim, num_layers, output_dim):
-        super(LSTMModel, self).__init__()
-        self.hidden_dim = hidden_dim
-        self.num_layers = num_layers
-        self.lstm = nn.LSTM(input_dim, hidden_dim,
-                            num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, output_dim)
-
-    def forward(self, x):
-        h0 = torch.zeros(self.num_layers, x.size(0),
-                         self.hidden_dim).to(device)
-        c0 = torch.zeros(self.num_layers, x.size(0),
-                         self.hidden_dim).to(device)
-        out, _ = self.lstm(x, (h0, c0))
-        out = self.fc(out[:, -1, :])
-        return out
-
-
 class Conv1D_LSTMModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_layers, output_dim):
         super(Conv1D_LSTMModel, self).__init__()
         self.hidden_dim = hidden_dim
         self.num_layers = num_layers
 
-        self.conv1 = nn.Conv1d(input_dim, 15, kernel_size=1)  # Adjust number of output channels to 15
+        self.conv1 = nn.Conv1d(input_dim, 15, kernel_size=1)
         self.relu = nn.ReLU()
-        self.lstm = nn.LSTM(15, hidden_dim, num_layers, batch_first=True, dropout=0.2)  # Adjust input_dim to 15
+        self.lstm = nn.LSTM(15, hidden_dim, num_layers, batch_first=True, dropout=0.2)
         self.fc = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x):
@@ -81,12 +62,13 @@ class Conv1D_LSTMModel(nn.Module):
         return out
 
 
-
-def train_model(model, X_train, y_train, X_val, y_val, num_epochs, learning_rate, patience, progress_bar=False):
+def train_model(model, X_train, y_train, X_val, y_val, num_epochs, learning_rate, patience):
     criterion = torch.nn.MSELoss(reduction="mean").to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     early_stopping = EarlyStopping(patience=patience, verbose=True)
+    progress_bar = st.progress(0)
+    loss_values = []
 
     for t in range(num_epochs):
         model.train()
@@ -109,11 +91,12 @@ def train_model(model, X_train, y_train, X_val, y_val, num_epochs, learning_rate
             break
 
         if t % 10 == 0:
+            loss_values.append(loss.item())
             print(f"Epoch {t} train loss: {loss.item()}, validation loss: {val_loss.item()}")
 
-        if progress_bar:
-            st.progress((t + 1) / num_epochs)  # Update the progress bar
+        progress_bar.progress((t + 1) / num_epochs)
 
+    training_loss_chart = st.line_chart(pd.DataFrame(loss_values, columns=['loss']))
     return model
 
 
@@ -182,7 +165,6 @@ num_layers = st.slider("Number of Layers", min_value=1, max_value=5, value=3)
 num_epochs = st.slider("Number of Epochs", min_value=1, max_value=500, value=200)
 learning_rate_str = st.text_input("Learning Rate", "0.0001")
 learning_rate = float(learning_rate_str)
-progress_bar = st.checkbox("Show Progress Bar")
 
 
 if st.button("Predict"):
@@ -203,37 +185,21 @@ if st.button("Predict"):
     input_dim = X.shape[2]
     output_dim = data.shape[1]
 
-    lstm_model = LSTMModel(input_dim, hidden_dim, num_layers, output_dim).to(device)
-    conv1d_lstm_model = Conv1D_LSTMModel(input_dim, hidden_dim, num_layers, output_dim).to(device)
-
-    lstm_model = train_model(lstm_model, X, y, X, y, num_epochs, learning_rate, patience=7, progress_bar=progress_bar)
-    conv1d_lstm_model = train_model(conv1d_lstm_model, X, y, X, y, num_epochs, learning_rate, patience=7, progress_bar=progress_bar)
+    model = Conv1D_LSTMModel(input_dim, hidden_dim, num_layers, output_dim).to(device)
+    model = train_model(model, X, y, X, y, num_epochs, learning_rate, patience=7)
 
     X_predict = X[-1:, :, :]
-    lstm_model.eval()
-    conv1d_lstm_model.eval()
+    model.eval()
+    prediction = model(X_predict)
+    prediction = prediction.detach().cpu().numpy()
 
-    lstm_prediction = lstm_model(X_predict)
-    conv1d_lstm_prediction = conv1d_lstm_model(X_predict)
-
-    lstm_prediction = lstm_prediction.detach().cpu().numpy()
-    conv1d_lstm_prediction = conv1d_lstm_prediction.detach().cpu().numpy()
-
-    lstm_prediction = scaler.inverse_transform(lstm_prediction)
-    conv1d_lstm_prediction = scaler.inverse_transform(conv1d_lstm_prediction)
+    prediction = scaler.inverse_transform(prediction)
 
     st.subheader(f"Predicted prices for {ticker} on {next_day}:")
-    st.write("Using LSTM Model:")
-    st.write(f"Open: {lstm_prediction[0, 0]}")
-    st.write(f"High: {lstm_prediction[0, 1]}")
-    st.write(f"Low: {lstm_prediction[0, 2]}")
-    st.write(f"Close: {lstm_prediction[0, 3]}")
-
-    st.write("Using Conv1D LSTM Model:")
-    st.write(f"Open: {conv1d_lstm_prediction[0, 0]}")
-    st.write(f"High: {conv1d_lstm_prediction[0, 1]}")
-    st.write(f"Low: {conv1d_lstm_prediction[0, 2]}")
-    st.write(f"Close: {conv1d_lstm_prediction[0, 3]}")
+    st.write(f"Open: {prediction[0, 0]}")
+    st.write(f"High: {prediction[0, 1]}")
+    st.write(f"Low: {prediction[0, 2]}")
+    st.write(f"Close: {prediction[0, 3]}")
 
     # Fetch actual data for the predicted day
     actual_data = fetch_historical_data(ticker, next_day, next_day_datetime + timedelta(days=1))
