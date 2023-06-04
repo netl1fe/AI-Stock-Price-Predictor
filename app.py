@@ -1,3 +1,4 @@
+#USES Regular LSTM
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -5,6 +6,8 @@ import yfinance as yf
 from ta.volatility import BollingerBands
 from ta.trend import MACD
 from ta.momentum import RSIIndicator
+from ta.volume import VolumeWeightedAveragePrice
+from ta.others import DailyReturnIndicator
 from ta.utils import dropna
 from sklearn.preprocessing import MinMaxScaler
 import torch
@@ -95,21 +98,34 @@ def fetch_historical_data(ticker, start_date, end_date):
 
 
 def add_selected_ta_features(data):
+    # Bollinger Bands
     indicator_bb = BollingerBands(close=data["Close"], window=20, window_dev=2)
     data['bb_bbm'] = indicator_bb.bollinger_mavg()
     data['bb_bbh'] = indicator_bb.bollinger_hband()
     data['bb_bbl'] = indicator_bb.bollinger_lband()
 
+    # Moving Average Convergence Divergence (MACD)
     indicator_macd = MACD(
         close=data["Close"], window_slow=26, window_fast=12, window_sign=9)
     data['macd'] = indicator_macd.macd()
     data['macd_signal'] = indicator_macd.macd_signal()
     data['macd_diff'] = indicator_macd.macd_diff()
 
+    # Relative Strength Index (RSI)
     indicator_rsi = RSIIndicator(close=data["Close"], window=14)
     data['rsi'] = indicator_rsi.rsi()
 
+    # Volume Weighted Average Price (VWAP)
+    indicator_vwap = VolumeWeightedAveragePrice(
+        high=data['High'], low=data['Low'], close=data['Close'], volume=data['Volume'])
+    data['vwap'] = indicator_vwap.volume_weighted_average_price()
+
+    # Daily Return
+    indicator_daily_return = DailyReturnIndicator(close=data['Close'])
+    data['daily_return'] = indicator_daily_return.daily_return()
+
     return data
+
 
 
 def normalize_data(data):
@@ -177,17 +193,19 @@ def train_model(model, X, y, num_epochs, learning_rate):
 
 
 
-st.title("AI Stock Price Predictor")
+st.title("AI Stock & Crypto Price Predictor")
 
 st.subheader("Enter your preferences")
 ticker = st.text_input("Ticker Symbol", "SPY")
 start_date = st.date_input("Start Date", datetime(1993, 1, 30))
 end_date = st.date_input("End Date", datetime(2023, 5, 25))
-seq_length = st.slider("Sequence Length", min_value=1, max_value=100, value=60)
+seq_length = st.slider("Sequence Length", min_value=1, max_value=300, value=60)
 hidden_dim = st.slider("Hidden Dimension Size", min_value=1, max_value=128, value=64)
 num_layers = st.slider("Number of Layers", min_value=1, max_value=5, value=3)
 num_epochs = st.slider("Number of Epochs", min_value=1, max_value=500, value=200)
-learning_rate = st.slider("Learning Rate", min_value=0.0001, max_value=0.1, value=0.001, step=0.0001)
+learning_rate_str = st.text_input("Learning Rate", "0.0001")
+learning_rate = float(learning_rate_str)
+
 
 if st.button("Predict"):
     st.subheader("Fetching Data and Predicting Prices...")
@@ -236,4 +254,4 @@ if st.button("Predict"):
         st.write("The actual data for the predicted day is not yet available.")
 
 st.markdown("---")
-st.markdown("Built by netl1fe", unsafe_allow_html=True)
+st.markdown("Built by WJB", unsafe_allow_html=True)

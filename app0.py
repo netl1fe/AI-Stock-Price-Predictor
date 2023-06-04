@@ -1,4 +1,4 @@
-#USES Conv1D_LSTMModel
+#USES CASCADING LEARNING
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -39,64 +39,46 @@ class EarlyStopping:
             self.counter = 0
 
 
-class Conv1D_LSTMModel(nn.Module):
+class LSTMModel(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_layers, output_dim):
-        super(Conv1D_LSTMModel, self).__init__()
+        super(LSTMModel, self).__init__()
         self.hidden_dim = hidden_dim
         self.num_layers = num_layers
-
-        self.conv1 = nn.Conv1d(input_dim, 15, kernel_size=1)
-        self.relu = nn.ReLU()
-        self.lstm = nn.LSTM(15, hidden_dim, num_layers, batch_first=True, dropout=0.2)
+        self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x):
         h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_dim).to(device)
         c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_dim).to(device)
-
-        x = x.permute(0, 2, 1)  # Transpose dimensions to match Conv1d input shape
-        x = self.conv1(x)
-        x = self.relu(x)
-
-        out, _ = self.lstm(x.permute(0, 2, 1), (h0, c0))  # Transpose dimensions back
+        out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
         return out
 
 
-def train_model(model, X_train, y_train, X_val, y_val, num_epochs, learning_rate, patience):
+def train_model(model, X, y, num_epochs, learning_rate):
     criterion = torch.nn.MSELoss(reduction="mean").to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-
-    early_stopping = EarlyStopping(patience=patience, verbose=True)
+    model.train()
     progress_bar = st.progress(0)
-    loss_values = []
 
+    loss_values = []
     for t in range(num_epochs):
-        model.train()
         optimizer.zero_grad()
-        inputs = X_train.to(device)
-        targets = y_train.to(device)
+        inputs = X.to(device)
+        targets = y.to(device)
         outputs = model(inputs)
         loss = criterion(outputs, targets)
         loss.backward()
         optimizer.step()
 
-        model.eval()
-        val_outputs = model(X_val.to(device))
-        val_loss = criterion(val_outputs, y_val.to(device))
-
-        early_stopping(val_loss, model)
-
-        if early_stopping.early_stop:
-            print("Early stopping")
-            break
-
         if t % 10 == 0:
             loss_values.append(loss.item())
-            print(f"Epoch {t} train loss: {loss.item()}, validation loss: {val_loss.item()}")
-
-        progress_bar.progress((t + 1) / num_epochs)
-
+            print(f"Epoch {t} train loss: {loss.item()}")
+        
+        progress_bar.progress((t+1)/num_epochs)
+    
+    model.eval()
+    
     training_loss_chart = st.line_chart(pd.DataFrame(loss_values, columns=['loss']))
     return model
 
@@ -166,6 +148,7 @@ num_layers = st.slider("Number of Layers", min_value=1, max_value=5, value=3)
 num_epochs = st.slider("Number of Epochs", min_value=1, max_value=500, value=200)
 learning_rate_str = st.text_input("Learning Rate", "0.0001")
 learning_rate = float(learning_rate_str)
+num_iterations = st.slider("Number of Iterations", min_value=1, max_value=10, value=3)
 
 
 if st.button("Predict"):
@@ -176,41 +159,49 @@ if st.button("Predict"):
 
     data = fetch_historical_data(ticker, start_date, end_date)
     data = add_selected_ta_features(data)
-    data = data.dropna()
+    data = data.dropna()  
     data, scaler = normalize_data(data.values)
-    X, y = create_sequences(data, seq_length)
 
-    X = torch.from_numpy(X).float().to(device)
-    y = torch.from_numpy(y).float().to(device)
+    prediction = None
+    for i in range(num_iterations):
+        X, y = create_sequences(data, seq_length)
 
-    input_dim = X.shape[2]
-    output_dim = data.shape[1]
+        X = torch.from_numpy(X).float().to(device)
+        y = torch.from_numpy(y).float().to(device)
 
-    model = Conv1D_LSTMModel(input_dim, hidden_dim, num_layers, output_dim).to(device)
-    model = train_model(model, X, y, X, y, num_epochs, learning_rate, patience=7)
+        input_dim = X.shape[2]
+        output_dim = data.shape[1]
 
-    X_predict = X[-1:, :, :]
-    model.eval()
-    prediction = model(X_predict)
-    prediction = prediction.detach().cpu().numpy()
+        model = LSTMModel(input_dim, hidden_dim, num_layers, output_dim).to(device)
+        model = train_model(model, X, y, num_epochs, learning_rate)
 
-    prediction = scaler.inverse_transform(prediction)
+        X_predict = X[-1:, :, :]
+        model.eval()
+        iter_prediction = model(X_predict)
+        iter_prediction = iter_prediction.detach().cpu().numpy()
+
+        iter_prediction = scaler.inverse_transform(iter_prediction)
+
+        if prediction is None:
+            prediction = iter_prediction
+        else:
+            prediction = np.concatenate((prediction, iter_prediction), axis=0)
+
+        # Update the data with the latest prediction
+        new_data = np.concatenate((data, iter_prediction), axis=0)
+        data = new_data
 
     st.subheader(f"Predicted prices for {ticker} on {next_day}:")
-    st.write(f"Open: {prediction[0, 0]}")
-    st.write(f"High: {prediction[0, 1]}")
-    st.write(f"Low: {prediction[0, 2]}")
-    st.write(f"Close: {prediction[0, 3]}")
+    for i, price in enumerate(["Open", "High", "Low", "Close"]):
+        st.write(f"{price}: {prediction[-1, i]}")
 
     # Fetch actual data for the predicted day
     actual_data = fetch_historical_data(ticker, next_day, next_day_datetime + timedelta(days=1))
 
     if not actual_data.empty:
         st.subheader(f"Actual prices for {ticker} on {next_day}:")
-        st.write(f"Open: {actual_data.iloc[0]['Open']}")
-        st.write(f"High: {actual_data.iloc[0]['High']}")
-        st.write(f"Low: {actual_data.iloc[0]['Low']}")
-        st.write(f"Close: {actual_data.iloc[0]['Close']}")
+        for i, price in enumerate(["Open", "High", "Low", "Close"]):
+            st.write(f"{price}: {actual_data.iloc[0][price]}")
     else:
         st.write("The actual data for the predicted day is not yet available.")
 
