@@ -284,4 +284,4 @@ if st.button("Predict"):
         st.write("The actual data for the predicted day is not yet available.")
 
 st.markdown("---")
-st.markdown("Built by WJB", unsafe_allow_html=True)
+st.markdown("Built by Netl1fe", unsafe_allow_html=True)
