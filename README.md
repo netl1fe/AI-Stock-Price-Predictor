@@ -1,38 +1,32 @@
-# AI Stock Price Predictor
+**AI Stock & Crypto Price Predictor**
 
-This is a Streamlit-based application that uses an LSTM (Long Short-Term Memory) model to predict stock prices based on historical data and selected technical indicators.
+This program is an AI-powered stock and cryptocurrency price predictor built using Python and Streamlit. It utilizes Long Short-Term Memory (LSTM) neural networks and technical analysis indicators to make predictions on the future prices of financial assets.
 
-## Installation
+The program fetches historical price data from Yahoo Finance using the `yfinance` library. It then applies various technical analysis indicators from the `ta` library, including Bollinger Bands, Moving Average Convergence Divergence (MACD), Relative Strength Index (RSI), and others, to extract relevant features from the data. The data is normalized using a Min-Max Scaler from `scikit-learn`.
 
-1. Clone the repository to your local machine.
-2. Install the required dependencies by running `pip install -r requirements.txt`.
-3. Run the application with the command `streamlit run app.py`.
+The LSTM model is implemented using PyTorch and consists of multiple layers of LSTM cells followed by a fully connected layer for the output. The model is trained on the historical price data using mean squared error (MSE) loss and Adam optimizer.
 
-## Usage
+The program provides a user interface using Streamlit, allowing users to customize the prediction settings such as the ticker symbol, number of layers, hidden dimension, number of epochs, learning rate, and sequence length. Users can also specify the start and end dates for the historical data.
 
-1. Open the application in your browser.
-2. Set the desired parameters in the sidebar:
-   - Choose the ticker symbol for the stock you want to predict.
-   - Specify the start and end dates for the historical data.
-   - Adjust the model settings, such as the hidden dimension, number of layers, number of epochs, learning rate, and sequence length.
-   - Determine the number of prediction cycles you want to run.
-3. Click the "Predict" button to start the prediction process.
-4. The application will display the predicted prices for the next day based on the selected parameters.
-5. Additionally, the actual prices for the predicted day will be fetched and displayed if available.
-6. The best predictions from all the cycles will be identified and highlighted.
-7. The best model will be saved as "best_model.pt" in the current directory.
+Upon clicking the "Predict" button, the program performs the following steps:
 
-## Features
+1. Fetches the historical price data for the specified ticker and date range.
+2. Applies the selected technical analysis indicators to the data.
+3. Normalizes the data using Min-Max Scaler.
+4. Creates sequences of input-output pairs for training the LSTM model.
+5. Trains the model on the data for the specified number of epochs.
+6. Makes predictions for the next day's prices.
+7. Displays the predicted prices and compares them to the actual prices (if available).
 
-- Uses an LSTM model to predict stock prices.
-- Includes various technical indicators for feature engineering, such as Bollinger Bands, MACD, RSI, VWAP, and more.
-- Allows customization of model parameters and input settings.
-- Provides visualization of the training loss during model training.
-- Compares predictions across multiple cycles and identifies the best predictions.
-- Fetches and displays actual prices for the predicted day.
+The program allows multiple prediction cycles, where each cycle predicts the next day's prices based on the previous day's predictions. It keeps track of the best predictions across all cycles and saves the corresponding model to a file named `best_model.pt`.
 
-## Limitations
+**Setup and Usage:**
 
-- Stock market predictions are inherently uncertain and can be affected by various factors.
-- The accuracy of the predictions may vary depending on the selected parameters, historical data, and market conditions.
-- The program should not be used as the sole basis for financial decisions. It is intended for educational and informational purposes only.
+1. Clone the repository or download the program files.
+2. Install the required dependencies listed in the `requirements.txt` file using `pip install -r requirements.txt`.
+3. Run the program using `streamlit run app.py`.
+4. Access the program interface in your web browser at `http://localhost:8501`.
+
+**Disclaimer:**
+
+Please note that the predictions made by this program are based on historical data and technical analysis indicators. They should not be considered as financial advice or an accurate representation of future prices. Always conduct your own research.
