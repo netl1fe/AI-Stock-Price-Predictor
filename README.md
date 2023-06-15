@@ -1,4 +1,4 @@
-##AI Stock & Crypto Price Predictor
+AI Stock & Crypto Price Predictor
 
 This program is an AI-powered stock and cryptocurrency price predictor built using Python and Streamlit. It utilizes Long Short-Term Memory (LSTM) neural networks and technical analysis indicators to make predictions on the future prices of financial assets.
 
