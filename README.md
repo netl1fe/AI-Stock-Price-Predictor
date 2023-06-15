@@ -1,59 +1,38 @@
 # AI Stock Price Predictor
 
-This is a Streamlit web app which uses a LSTM model to predict future stock prices. The LSTM model is trained on historical stock prices and multiple technical indicators such as Bollinger Bands, MACD, and RSI.
+This is a Streamlit-based application that uses an LSTM (Long Short-Term Memory) model to predict stock prices based on historical data and selected technical indicators.
 
-The stock data is fetched from Yahoo Finance using the `yfinance` library. The technical indicators are computed using the `ta` library.
+## Installation
 
-## Features
-
-- Select any publicly traded company from Yahoo Finance.
-- Choose the date range of the historical data for the model to train on.
-- Set the model hyperparameters such as the sequence length, hidden dimension size, number of layers, number of epochs, and learning rate.
-- Visualize the loss during the model training.
-
-## Setup & Installation
-
-1. Clone the repository
-```bash
-git clone https://github.com/netl1fe/AI-Stock-Price-Predictor.git
-```
-2. Change directory to the project
-```bash
-cd AI-Stock-Price-Predictor
-```
-3. Install the necessary dependencies
-```bash
-pip install -r requirements.txt
-```
-4. Run the Streamlit app
-```bash
-streamlit run app.py
-```
-
-## Requirements
-
-The necessary dependencies are listed in the `requirements.txt` file. They include:
-- numpy==1.21.0
-- pandas==1.3.0
-- yfinance==0.1.63
-- ta==0.7.0
-- scikit-learn==0.24.2
-- torch==1.9.0
-- streamlit==0.86.0
-
-Please ensure you have the correct versions of these libraries installed to avoid any potential issues.
-
-**Note:** This project assumes you have Python 3.x installed. 
+1. Clone the repository to your local machine.
+2. Install the required dependencies by running `pip install -r requirements.txt`.
+3. Run the application with the command `streamlit run app.py`.
 
 ## Usage
 
-- Enter the ticker symbol of the stock you want to predict in the text box.
-- Select the date range of the historical data you want to train the model on.
-- Use the sliders to set the model hyperparameters.
-- Click on "Predict" to start the model training and prediction process.
+1. Open the application in your browser.
+2. Set the desired parameters in the sidebar:
+   - Choose the ticker symbol for the stock you want to predict.
+   - Specify the start and end dates for the historical data.
+   - Adjust the model settings, such as the hidden dimension, number of layers, number of epochs, learning rate, and sequence length.
+   - Determine the number of prediction cycles you want to run.
+3. Click the "Predict" button to start the prediction process.
+4. The application will display the predicted prices for the next day based on the selected parameters.
+5. Additionally, the actual prices for the predicted day will be fetched and displayed if available.
+6. The best predictions from all the cycles will be identified and highlighted.
+7. The best model will be saved as "best_model.pt" in the current directory.
 
-The predicted stock prices for the next day will be displayed once the model finishes training.
+## Features
 
-## Disclaimer
+- Uses an LSTM model to predict stock prices.
+- Includes various technical indicators for feature engineering, such as Bollinger Bands, MACD, RSI, VWAP, and more.
+- Allows customization of model parameters and input settings.
+- Provides visualization of the training loss during model training.
+- Compares predictions across multiple cycles and identifies the best predictions.
+- Fetches and displays actual prices for the predicted day.
 
-This application is for informational purposes only and does not constitute investment advice. Please do your own research before making any investment decisions.
+## Limitations
+
+- Stock market predictions are inherently uncertain and can be affected by various factors.
+- The accuracy of the predictions may vary depending on the selected parameters, historical data, and market conditions.
+- The program should not be used as the sole basis for financial decisions. It is intended for educational and informational purposes only.
