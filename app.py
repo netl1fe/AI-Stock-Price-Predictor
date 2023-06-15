@@ -141,13 +141,13 @@ def create_sequences(data, seq_length):
     return np.array(xs), np.array(ys)
 
 # Sidebar input
-hidden_dim = st.sidebar.slider("Hidden Dimension", min_value=1, max_value=100, value=32)
-num_layers = st.sidebar.slider("Number of Layers", min_value=1, max_value=5, value=2)
-num_epochs = int(st.sidebar.text_input("Number of Epochs", value='100'))  # Convert the text input to int
-learning_rate = float(st.sidebar.text_input("Learning Rate", value='0.01'))  # Convert the text input to float
-seq_length = st.sidebar.slider("Sequence Length", min_value=1, max_value=200, value=100)
+hidden_dim = st.sidebar.slider("Hidden Dimension", min_value=1, max_value=100, value=64)
+num_layers = st.sidebar.slider("Number of Layers", min_value=1, max_value=5, value=3)
+num_epochs = int(st.sidebar.text_input("Number of Epochs", value='100')) 
+learning_rate = float(st.sidebar.text_input("Learning Rate", value='0.001'))  
+seq_length = st.sidebar.slider("Sequence Length", min_value=1, max_value=200, value=60)
 ticker = st.sidebar.text_input("Ticker", "SPY")
-num_cycles = int(st.sidebar.text_input("Number of Prediction Cycles", value='1'))  # Convert the text input to int
+num_cycles = int(st.sidebar.text_input("Number of Prediction Cycles", value='1'))  
 
 start_date = st.sidebar.date_input("Start Date", datetime.now() - timedelta(days=365 * 5))
 end_date = st.sidebar.date_input("End Date", datetime.now() - timedelta(days=1))
@@ -222,3 +222,4 @@ if best_model is not None:
     st.write(f"Best model saved to: {model_path}")
 
 st.subheader("Prediction completed.")
+
