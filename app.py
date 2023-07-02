@@ -205,37 +205,66 @@ for cycle in range(num_cycles):
         prediction = model(X_valid)
         loss = criterion(prediction, y_valid)
 
-    current_date = data.index[-seq_length] + pd.Timedelta(days=1)  # Update current_date
-
-    st.write(f"Prediction for date: {current_date}")
-
     if loss < best_loss:
         best_loss = loss
         best_model = model
 
     st.write(f"Validation loss: {loss.item()}")
 
-    # Inverse transform the predicted and actual prices
-    predicted_prices = train_scaler.inverse_transform(prediction.cpu().numpy())
-    true_prices = train_scaler.inverse_transform(y_train.cpu().numpy())
+# Set the current_date to the day after the end_date
+current_date = end_date + pd.Timedelta(days=1)  
 
-    col1, col2 = st.columns(2)
+st.write(f"Prediction for date: {current_date}")
 
-    with col1:
-        st.subheader("**Predicted Prices**")
-        st.write(f"**Open**: {predicted_prices[0][0]}")
-        st.write(f"**High**: {predicted_prices[0][1]}")
-        st.write(f"**Low**: {predicted_prices[0][2]}")
-        st.write(f"**Close**: {predicted_prices[0][3]}")
+# Get the last seq_length days of data
+last_sequence = np.expand_dims(data[-seq_length:], axis=0)
 
+# Normalize the data
+last_sequence_normalized, _ = normalize_data(last_sequence)
+
+# Convert to PyTorch tensor and move to device
+last_sequence_normalized = torch.from_numpy(last_sequence_normalized).float().to(device)
+
+# Make prediction
+with torch.no_grad():
+    prediction = best_model(last_sequence_normalized)
+
+# The model returns normalized prices, so denormalize them
+# The model returns normalized prices, so denormalize them
+predicted_prices = train_scaler.inverse_transform(prediction.cpu().numpy())[0]
+
+col1, col2 = st.columns(2)
+
+# Print out the predicted prices
+with col1:
+    st.subheader(f"**Predicted Prices**")
+    st.write(f"**Open**: {predicted_prices[0]}")
+    st.write(f"**High**: {predicted_prices[1]}")
+    st.write(f"**Low**: {predicted_prices[2]}")
+    st.write(f"**Close**: {predicted_prices[3]}")
+
+# Fetch the actual data for the current_date
+actual_data = yf.download(ticker, start=current_date, end=current_date + pd.Timedelta(days=1), progress=False)
+
+# If there's data for the day (might not be if it's a weekend/holiday)
+if not actual_data.empty:
+    actual_price = actual_data.iloc[0]
+
+    # Print out the actual prices
     with col2:
-        st.subheader("**Actual Prices**")
-        st.write(f"**Open**: {true_prices[0][0]}")
-        st.write(f"**High**: {true_prices[0][1]}")
-        st.write(f"**Low**: {true_prices[0][2]}")
-        st.write(f"**Close**: {true_prices[0][3]}")
+        st.subheader(f"**Actual Prices**")
+        st.write(f"**Open**: {actual_price['Open']}")
+        st.write(f"**High**: {actual_price['High']}")
+        st.write(f"**Low**: {actual_price['Low']}")
+        st.write(f"**Close**: {actual_price['Close']}")
+else:
+    st.write("Could not fetch the actual prices. The stock market may not have been open on this day.")
+    
+if loss < best_loss:
+    best_loss = loss
+    best_model = model
 
-
+# If the best_model variable is not None, it means that at least one model was trained
 if best_model is not None:
     st.balloons()
     st.subheader("Best Model")
@@ -248,13 +277,13 @@ if best_model is not None:
 
     st.write(f"Final validation loss: {final_loss.item()}")
 
-    # Inverse transform the final predictions
+    # Inverse transform the final predictions and true prices
     final_predicted_prices = train_scaler.inverse_transform(final_predictions.cpu().numpy())
-    final_true_prices = train_scaler.inverse_transform(y_valid.cpu().numpy())
+    final_true_prices = valid_scaler.inverse_transform(y_valid.cpu().numpy())
 
     # Plot the final predictions vs true prices
     st.subheader("Predictions vs True Prices")
     df = pd.DataFrame({'Predicted': final_predicted_prices.flatten(), 'True': final_true_prices.flatten()})
     st.line_chart(df)
 else:
-    st.write("No model was trained.")
+    st.error("Could not train a model. Try increasing the number of cycles or check the data.")
