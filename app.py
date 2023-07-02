@@ -208,6 +208,7 @@ for cycle in range(num_cycles):
     if loss < best_loss:
         best_loss = loss
         best_model = model
+        torch.save(best_model.state_dict(), 'best_model_weights.pth')  # Save the new best model
 
     st.write(f"Validation loss: {loss.item()}")
 
@@ -229,7 +230,6 @@ last_sequence_normalized = torch.from_numpy(last_sequence_normalized).float().to
 with torch.no_grad():
     prediction = best_model(last_sequence_normalized)
 
-# The model returns normalized prices, so denormalize them
 # The model returns normalized prices, so denormalize them
 predicted_prices = train_scaler.inverse_transform(prediction.cpu().numpy())[0]
 
@@ -259,10 +259,6 @@ if not actual_data.empty:
         st.write(f"**Close**: {actual_price['Close']}")
 else:
     st.write("Could not fetch the actual prices. The stock market may not have been open on this day.")
-    
-if loss < best_loss:
-    best_loss = loss
-    best_model = model
 
 # If the best_model variable is not None, it means that at least one model was trained
 if best_model is not None:
@@ -279,7 +275,7 @@ if best_model is not None:
 
     # Inverse transform the final predictions and true prices
     final_predicted_prices = train_scaler.inverse_transform(final_predictions.cpu().numpy())
-    final_true_prices = valid_scaler.inverse_transform(y_valid.cpu().numpy())
+    final_true_prices = train_scaler.inverse_transform(y_valid.cpu().numpy())
 
     # Plot the final predictions vs true prices
     st.subheader("Predictions vs True Prices")
