@@ -12,7 +12,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Sidebar inputs
 ticker = st.sidebar.text_input("Ticker", "SPY")
-start_date = st.sidebar.date_input("Start Date", datetime.now() - timedelta(days=365 * 5))
+start_date = datetime(1993, 1, 30)
 end_date = st.sidebar.date_input("End Date", datetime.now() - timedelta(days=1))
 seq_length = st.sidebar.slider("Sequence Length", min_value=1, max_value=200, value=60)
 
@@ -70,7 +70,7 @@ optimizer = BayesianOptimization(
 )
 
 # Run the optimization
-optimizer.maximize(init_points=10, n_iter=30)
+optimizer.maximize(init_points=200, n_iter=1000)
 
 best_params = optimizer.max['params']
 best_params['hidden_dim'] = int(best_params['hidden_dim'])
