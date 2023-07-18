@@ -25,7 +25,7 @@ def fetch_single_day_data(ticker, date):
 
 # Function to calculate accuracy
 def calculate_accuracy(actual, predicted):
-    return abs((actual - predicted) / actual) * 100
+    return abs(actual - predicted)
 
 
 # Sidebar inputs
@@ -97,7 +97,7 @@ typing_effect(output_text, speed=0.03)
 
 # Display the accuracy scores on the right side
 st.sidebar.markdown("### Accuracy Scores")
-st.sidebar.write(f"Open: {accuracy_open:.2%}")
-st.sidebar.write(f"High: {accuracy_high:.2%}")
-st.sidebar.write(f"Low: {accuracy_low:.2%}")
-st.sidebar.write(f"Close: {accuracy_close:.2%}")
+st.sidebar.write(f"Open: ${accuracy_open:.2f}")
+st.sidebar.write(f"High: ${accuracy_high:.2f}")
+st.sidebar.write(f"Low: ${accuracy_low:.2f}")
+st.sidebar.write(f"Close: ${accuracy_close:.2f}")
