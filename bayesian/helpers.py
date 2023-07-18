@@ -11,16 +11,12 @@ def fetch_historical_data(ticker, start_date, end_date):
     return data
 
 def add_selected_ta_features(data):
-    # Add any technical indicators that you wish to include
-    # Here are few examples
     data['SMA'] = ta.trend.sma_indicator(data['Close'])
     data['RSI'] = ta.momentum.rsi(data['Close'])
     data = data.dropna()
     return data
 
 def reorder_data(data):
-    # This function reorders the columns in a DataFrame.
-    # Adjust as necessary to suit your specific needs.
     data = data[['SMA', 'RSI', 'Open', 'High', 'Low', 'Close', 'Volume']]
     return data
 
