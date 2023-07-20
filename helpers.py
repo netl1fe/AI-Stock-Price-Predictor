@@ -125,4 +125,3 @@ def model_loss(model, X, y, criterion):
     outputs = model(X)
     loss = criterion(outputs, y)
     return loss.item()
- 
