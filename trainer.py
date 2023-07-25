@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+import json
 from bayes_opt import BayesianOptimization
 import torch
 import torch.nn as nn
@@ -44,8 +45,12 @@ y_valid = torch.from_numpy(y_valid).float().to(device)
 
 input_dim = train_data.shape[1]
 
+# Global variables for saving the best model
+best_valid_loss = float('inf')
+
 # Define the function we want to optimize
 def optimize_model(hidden_dim, num_layers, learning_rate):
+    global best_valid_loss
     hidden_dim = int(hidden_dim)
     num_layers = int(num_layers)
     model = LSTMModel(input_dim, hidden_dim, num_layers, input_dim).to(device)
@@ -53,6 +58,18 @@ def optimize_model(hidden_dim, num_layers, learning_rate):
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     model, _ = train_model(model, X_train, y_train, 100, criterion, optimizer)
     valid_loss = model_loss(model, X_valid, y_valid, criterion)
+    # Save the model if it's better than the current best
+    if valid_loss < best_valid_loss:
+        best_valid_loss = valid_loss
+        torch.save(model.state_dict(), 'best_model.pth')
+        # Save the best parameters
+        best_params = {
+            'hidden_dim': hidden_dim,
+            'num_layers': num_layers,
+            'learning_rate': learning_rate,
+        }
+        with open('best_params.json', 'w') as f:
+            json.dump(best_params, f)
     return -valid_loss  # We want to maximize the negative loss (i.e., minimize the loss)
 
 # Define the bounds of the parameters we want to optimize
@@ -71,6 +88,11 @@ optimizer = BayesianOptimization(
 
 # Run the optimization
 optimizer.maximize(init_points=200, n_iter=1000)
+
+# Load the best parameters
+with open('best_params.json', 'r') as f:
+    best_params = json.load(f)
+
 
 best_params = optimizer.max['params']
 best_params['hidden_dim'] = int(best_params['hidden_dim'])
