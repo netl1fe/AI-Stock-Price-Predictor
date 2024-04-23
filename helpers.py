@@ -21,53 +21,42 @@ def fetch_historical_data(ticker, start_date, end_date):
     return data
 
 def add_selected_ta_features(data):
-    # Bollinger Bands
     indicator_bb = BollingerBands(close=data["Close"], window=20, window_dev=2)
     data['bb_bbm'] = indicator_bb.bollinger_mavg()
     data['bb_bbh'] = indicator_bb.bollinger_hband()
     data['bb_bbl'] = indicator_bb.bollinger_lband()
 
-    # Moving Average Convergence Divergence (MACD)
     indicator_macd = MACD(close=data["Close"], window_slow=26, window_fast=12, window_sign=9)
     data['macd'] = indicator_macd.macd()
     data['macd_signal'] = indicator_macd.macd_signal()
     data['macd_diff'] = indicator_macd.macd_diff()
-
-    # Relative Strength Index (RSI)
+    
     indicator_rsi = RSIIndicator(close=data["Close"], window=14)
     data['rsi'] = indicator_rsi.rsi()
 
-    # Volume Weighted Average Price (VWAP)
     indicator_vwap = VolumeWeightedAveragePrice(
         high=data['High'], low=data['Low'], close=data['Close'], volume=data['Volume'])
     data['vwap'] = indicator_vwap.volume_weighted_average_price()
 
-    # Daily Return
     indicator_daily_return = DailyReturnIndicator(close=data['Close'])
     data['daily_return'] = indicator_daily_return.daily_return()
-
-    # Simple Moving Average (SMA)
+    
     indicator_sma = SMAIndicator(close=data["Close"], window=14)
     data['sma'] = indicator_sma.sma_indicator()
 
-    # Exponential Moving Average (EMA)
     indicator_ema = EMAIndicator(close=data["Close"], window=14)
     data['ema'] = indicator_ema.ema_indicator()
 
-    # Stochastic Oscillator
     indicator_so = StochasticOscillator(high=data['High'], low=data['Low'], close=data['Close'], window=14)
     data['so_k'] = indicator_so.stoch()
     data['so_d'] = indicator_so.stoch_signal()
 
-    # Average True Range (ATR)
     indicator_atr = AverageTrueRange(high=data['High'], low=data['Low'], close=data['Close'], window=14)
     data['atr'] = indicator_atr.average_true_range()
 
-    # Commodity Channel Index (CCI)
     indicator_cci = CCIIndicator(high=data['High'], low=data['Low'], close=data['Close'], window=20)
     data['cci'] = indicator_cci.cci()
 
-    # On Balance Volume (OBV)
     indicator_obv = OnBalanceVolumeIndicator(close=data['Close'], volume=data['Volume'])
     data['obv'] = indicator_obv.on_balance_volume()
 
@@ -76,8 +65,6 @@ def add_selected_ta_features(data):
 
 
 def reorder_data(data):
-    # This function reorders the columns in a DataFrame.
-    # Adjust as necessary to suit your specific needs.
     data = data[[ 'Open', 'High', 'Low', 'Close', 'Volume']]
     return data
 
